@@ -3,57 +3,134 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Валентинка 💘</title>
+  <title>Valentine 💘</title>
+
   <style>
     :root{
-      --bg1:#ffdde8;
-      --bg2:#ffeef5;
-      --text:#2b2b2b;
-      --yes:#ff3b7a;
-      --no:#444;
+      --bg1:#ffe1ec;
+      --bg2:#fff3f8;
+      --card: rgba(255,255,255,0.78);
+      --stroke: rgba(255,255,255,0.55);
+      --text:#1f1f1f;
+      --muted:#5b5b5b;
+      --yes:#ff2f71;
+      --yesShadow: rgba(255,47,113,.26);
+      --noBg: rgba(0,0,0,0.06);
     }
-    *{box-sizing:border-box;}
+
+    *{ box-sizing:border-box; }
+
     body{
       margin:0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
       min-height:100vh;
       display:flex;
       align-items:center;
       justify-content:center;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
       background: radial-gradient(circle at top, var(--bg2), var(--bg1));
       color:var(--text);
       overflow:hidden;
     }
 
+    /* Floating hearts */
+    .heart{
+      position:fixed;
+      left:0;
+      bottom:-30px;
+      pointer-events:none;
+      opacity:0;
+      animation: floatUp linear forwards;
+      filter: drop-shadow(0 8px 14px rgba(0,0,0,.12));
+      z-index: 0;
+    }
+    @keyframes floatUp{
+      0%   { transform: translateY(0) scale(.9); opacity:0; }
+      15%  { opacity:1; }
+      100% { transform: translateY(-120vh) scale(1.25); opacity:0; }
+    }
+
+    /* Card layout */
     .card{
-      width:min(560px, 92vw);
-      background: rgba(255,255,255,0.72);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255,255,255,0.6);
+      width:min(860px, 94vw);
+      background: var(--card);
+      border: 1px solid var(--stroke);
       border-radius: 26px;
-      padding: 26px;
-      box-shadow: 0 18px 60px rgba(0,0,0,0.12);
-      text-align:center;
+      box-shadow: 0 18px 60px rgba(0,0,0,0.14);
+      backdrop-filter: blur(10px);
+      display:grid;
+      grid-template-columns: 260px 1fr;
+      gap: 18px;
+      padding: 18px;
       position:relative;
       z-index: 2;
     }
-    h1{
-      margin: 0 0 10px;
-      font-size: clamp(22px, 3.4vw, 34px);
+
+    .photo{
+      border-radius: 18px;
+      overflow:hidden;
+      height: 320px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.14);
+      position:relative;
+      background: #fff;
     }
-    p{
-      margin: 0 0 18px;
-      opacity: .9;
-      line-height:1.4;
+    .photo img{
+      width:100%;
+      height:100%;
+      object-fit: cover;
+      transform: scale(1.03);
+    }
+    .photo::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background: linear-gradient(180deg, rgba(255,255,255,0.00), rgba(0,0,0,0.06));
+      pointer-events:none;
     }
 
-    .btns{
+    .content{
+      border-radius: 20px;
+      padding: 10px 10px 6px;
       display:flex;
-      gap:12px;
+      flex-direction:column;
+      justify-content:center;
+      text-align:center;
+    }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: rgba(255,47,113,.12);
+      color: #ff2f71;
+      font-weight: 800;
+      font-size: 12px;
+      margin: 4px auto 10px;
+      width: fit-content;
+    }
+
+    h1{
+      margin: 0 0 8px;
+      font-size: clamp(22px, 3.2vw, 34px);
+      letter-spacing: .2px;
+    }
+    p{
+      margin: 0 0 16px;
+      color: var(--muted);
+      line-height: 1.35;
+    }
+
+    .btnRow{
+      display:flex;
+      gap: 12px;
       justify-content:center;
       flex-wrap:wrap;
-      margin-top: 14px;
+      margin-top: 6px;
+      align-items:center;
     }
+
     button{
       border:none;
       cursor:pointer;
@@ -61,294 +138,355 @@
       padding: 12px 18px;
       font-size: 16px;
       font-weight: 800;
-      transition: transform .15s ease, box-shadow .15s ease, opacity .15s ease;
-      user-select:none;
+      transition: transform .18s ease, opacity .18s ease, box-shadow .18s ease;
       transform-origin: center;
+      user-select:none;
     }
+
     #yesBtn{
       background: var(--yes);
       color:white;
-      box-shadow: 0 10px 22px rgba(255,59,122,.28);
-      transform: scale(1);
-    }
-    #noBtn{
-      background: rgba(0,0,0,0.06);
-      color: var(--no);
+      box-shadow: 0 12px 26px var(--yesShadow);
       transform: scale(1);
     }
 
-    .badge{
-      display:inline-block;
-      padding:6px 10px;
-      border-radius:999px;
-      background: rgba(255,59,122,.12);
-      color: #ff2f71;
-      font-weight:800;
-      font-size: 12px;
-      margin-bottom: 10px;
+    #noBtn{
+      background: var(--noBg);
+      color:#222;
+      transform: scale(1);
     }
-    .small{
+
+    .meta{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-top: 14px;
+      gap: 10px;
+      flex-wrap:wrap;
+      color: rgba(0,0,0,0.55);
       font-size: 13px;
-      opacity:.75;
-      margin-top: 10px;
     }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.6);
+      border: 1px solid rgba(255,255,255,0.7);
+    }
+
+    .musicBtn{
+      border: 1px solid rgba(0,0,0,0.08);
+      background: rgba(255,255,255,0.62);
+      color:#222;
+      padding: 8px 12px;
+      border-radius: 999px;
+      cursor:pointer;
+      font-weight: 800;
+      transition: transform .15s ease, opacity .15s ease;
+    }
+    .musicBtn:hover{ transform: translateY(-1px); }
 
     /* Fullscreen YES mode */
-    .fullscreen-yes{
-      position: fixed;
-      inset: 0;
+    .fullscreenOverlay{
+      position:fixed;
+      inset:0;
+      z-index: 9999;
       display:flex;
       align-items:center;
       justify-content:center;
-      z-index: 9999;
       background: radial-gradient(circle at top, var(--bg2), var(--bg1));
     }
     #yesBtn.fullscreen{
       width: 100vw;
       height: 100vh;
       border-radius: 0;
-      font-size: clamp(28px, 6vw, 64px);
+      font-size: clamp(26px, 6vw, 66px);
       box-shadow: none;
       transform: none !important;
     }
 
-    /* Final */
+    /* Success screen */
     .success{
       display:none;
       animation: pop .35s ease;
+      padding: 6px 4px 0;
     }
     @keyframes pop{
-      from{ transform: scale(.92); opacity:0; }
+      from{ transform: scale(.96); opacity:0; }
       to{ transform: scale(1); opacity:1; }
     }
+    .success h1{ margin-top: 6px; }
+    .success p{ margin-bottom: 12px; }
 
-    /* Hearts */
-    .heart{
-      position:absolute;
-      font-size: 18px;
-      opacity:.9;
-      animation: floatUp linear forwards;
-      filter: drop-shadow(0 6px 10px rgba(0,0,0,.12));
-      pointer-events:none;
-      z-index: 1;
-    }
-    @keyframes floatUp{
-      from{ transform: translateY(30px) scale(.9); opacity:0; }
-      20%{ opacity:1; }
-      to{ transform: translateY(-120vh) scale(1.25); opacity:0; }
+    @media (max-width: 700px){
+      .card{
+        grid-template-columns: 1fr;
+      }
+      .photo{ height: 260px; }
     }
   </style>
 </head>
 <body>
+
+  <!-- Audio (put your mp3 in same folder as index.html) -->
+  <audio id="bgMusic" src="music.mp3" preload="auto" loop></audio>
+
   <div class="card" id="card">
-    <div id="main">
-      <div class="badge">💌 Валентинка</div>
-      <h1 id="question">Менің валентинкам боласың ба? 💘</h1>
-      <p id="subtitle">Тек шындықты айт 😄</p>
-
-      <div class="btns" id="btnRow">
-        <button id="yesBtn">Иә ✅</button>
-        <button id="noBtn">Жоқ ❌</button>
-      </div>
-
-      <div class="small" id="counterHint"><b id="noCountView"></b></div>
+    <div class="photo">
+      <!-- Put her photo file next to index.html and name it her.jpg -->
+      <img src="aidoni.jpg" alt="Her photo">
     </div>
 
-    <div class="success" id="success">
-      <div class="badge">🎉 Урааа!</div>
-      <h1>Еее! Енді сен менің валентинкамсың 💞</h1>
-      <p>Бүгін сенің көңіліңді көтеру — менің міндетім 😌</p>
-      <p><b>Кездесуге қашан шығамыз?</b> ☕🍫</p>
+    <div class="content">
+      <div id="main">
+        <div class="badge">💌 Valentine</div>
+        <h1 id="question">Менің қызым боласың ба? 💘</h1>
+        <h3 id="question" style="color: #5b5b5b;">(Таңғы 5-те тұрдым)</h3>
+        <p id="subtitle">Жауапты өзің таңда 😊</p>
 
-      <div class="btns">
-        <button id="restartBtn" style="background: rgba(0,0,0,0.07); color:#222;">Қайтадан 😄</button>
+        <div class="btnRow" id="btnRow">
+          <button id="yesBtn">Иә</button>
+          <button id="noBtn">Жоқ</button>
+        </div>
+
+        <div class="meta">
+          <div class="pill">Жоқ: <b id="noCountView">0</b>/7</div>
+          <button class="musicBtn" id="musicToggle"></button>
+        </div>
       </div>
-      <div class="small">P.S. “Жоқ” батырмасы демалысқа кетті 😇</div>
+
+      <div class="success" id="success">
+        <div class="badge">💖</div>
+        <h1>Келістік 🫶</h1>
+        <p>Риддерде көріскенше <3</p>
+        <div class="btnRow">
+          <button id="restartBtn" style="background: rgba(0,0,0,0.06); color:#222;">Қайтадан</button>
+        </div>
+      </div>
     </div>
   </div>
 
-  <script>
-    const questionEl = document.getElementById("question");
-    const subtitleEl = document.getElementById("subtitle");
-    const yesBtn = document.getElementById("yesBtn");
-    const noBtn = document.getElementById("noBtn");
-    const main = document.getElementById("main");
-    const success = document.getElementById("success");
-    const restartBtn = document.getElementById("restartBtn");
-    const card = document.getElementById("card");
-    const noCountView = document.getElementById("noCountView");
-    const btnRow = document.getElementById("btnRow");
+<script>
+  // Elements
+  const card = document.getElementById('card');
+  const main = document.getElementById('main');
+  const success = document.getElementById('success');
 
-    let noCount = 0;
-    let yesScale = 1;
-    let noScale = 1;
+  const questionEl = document.getElementById('question');
+  const subtitleEl = document.getElementById('subtitle');
 
-    const prompts = [
-      "Точно “жоқ” па? 😳",
-      "Дұрыстап ойландың ба? 🤨",
-      "Мүмкін жай тест қылып тұрсың? 😅",
-      "Жүрегіме тигізіп жатырсың ғой 💔",
-      "Соңғы рет ойланып көр… 😈",
-      "Жарайды, енді жеткілікті 😏",
-      "Ок, тағдыр бәрін шешті 😇"
-    ];
+  const yesBtn = document.getElementById('yesBtn');
+  let noBtn = document.getElementById('noBtn');
 
-    function spawnHeart(){
-      const heart = document.createElement("div");
-      heart.className = "heart";
-      const hearts = ["💖","💘","💗","💓","💞","💕","❤️"];
-      heart.textContent = hearts[Math.floor(Math.random()*hearts.length)];
-      heart.style.left = (Math.random()*100) + "vw";
-      heart.style.bottom = "-30px";
-      const dur = 3 + Math.random() * 2.5;
-      heart.style.animationDuration = dur + "s";
-      heart.style.fontSize = (16 + Math.random()*18) + "px";
-      document.body.appendChild(heart);
-      setTimeout(() => heart.remove(), (dur*1000) + 200);
+  const btnRow = document.getElementById('btnRow');
+  const noCountView = document.getElementById('noCountView');
+
+  const music = document.getElementById('bgMusic');
+  const musicToggle = document.getElementById('musicToggle');
+
+  // State
+  let noCount = 0;
+  let yesScale = 1;
+  let noScale = 1;
+
+  const questions = [
+    "Сен сенімдісің бе?",
+    "Тағы бір рет ойланып көр.",
+    "Ок, соңғы жауап па?",
+    "Шынымен “жоқ” па?",
+    "Жарайды, түсіндім.",
+    "Тағы да тексеріп көрейік 🙂",
+    "Болды."
+  ];
+
+  // Music: browsers block autoplay -> start on first user gesture
+  let musicStarted = false;
+  let musicOn = true;
+
+  async function startMusicIfPossible(){
+    if(musicStarted) return;
+    musicStarted = true;
+    try{
+      await music.play();
+      musicOn = true;
+      musicToggle.textContent = "";
+    } catch(e){
+      // If blocked, keep OFF (user can press toggle)
+      musicOn = false;
+      musicToggle.textContent = "";
+      musicStarted = false;
     }
+  }
 
-    function partyHearts(){
-      for(let i=0;i<22;i++) setTimeout(spawnHeart, i*60);
-      let t=0;
-      const it = setInterval(() => {
-        spawnHeart();
-        t++;
-        if(t>18) clearInterval(it);
-      }, 180);
+  musicToggle.addEventListener('click', async (e) => {
+    e.stopPropagation();
+    if(!musicOn){
+      try{
+        await music.play();
+        musicOn = true;
+        musicToggle.textContent = "🔊 Музыка: ON";
+      }catch(e){
+        musicOn = false;
+        musicToggle.textContent = "🔈 Музыка: OFF";
+      }
+    } else {
+      music.pause();
+      musicOn = false;
+      musicToggle.textContent = "🔈 Музыка: OFF";
     }
+  });
 
-    function enableFullscreenYes(){
-      // Hide the whole card content, but keep it for restart logic
-      card.style.display = "none";
+  // Hearts
+  function spawnHeart(burst=false){
+    const h = document.createElement('div');
+    h.className = 'heart';
+    const hearts = ["💗","💖","💘","💕","💞","❤️"];
+    h.textContent = hearts[Math.floor(Math.random()*hearts.length)];
 
-      // Create overlay that contains YES button full-screen
-      const overlay = document.createElement("div");
-      overlay.className = "fullscreen-yes";
-      overlay.id = "fullscreenOverlay";
+    // position near center, or random
+    const x = burst ? (40 + Math.random()*20) : (Math.random()*100);
+    h.style.left = x + "vw";
 
-      // Move yesBtn into overlay and make it full-screen
-      overlay.appendChild(yesBtn);
-      yesBtn.classList.add("fullscreen");
-      yesBtn.textContent = "ИӘ ✅ (бас!)";
+    const dur = (burst ? 2.6 : 3.2) + Math.random()*2.1;
+    h.style.animationDuration = dur + "s";
+    h.style.fontSize = (16 + Math.random()*22) + "px";
+    h.style.opacity = 0; // will animate in
 
-      document.body.appendChild(overlay);
+    document.body.appendChild(h);
+    setTimeout(() => h.remove(), dur*1000 + 200);
+  }
 
-      subtitleEl.textContent = "😇";
-      partyHearts();
+  function heartBurst(){
+    for(let i=0;i<18;i++){
+      setTimeout(() => spawnHeart(true), i*55);
     }
+  }
 
-    noBtn.addEventListener("click", () => {
+  // Fullscreen YES mode
+  function enableFullscreenYes(){
+    // remove NO
+    if(noBtn) noBtn.remove();
+
+    // overlay
+    const overlay = document.createElement('div');
+    overlay.className = 'fullscreenOverlay';
+    overlay.id = 'fullscreenOverlay';
+    document.body.appendChild(overlay);
+
+    // hide card
+    card.style.display = 'none';
+
+    // move YES into overlay
+    overlay.appendChild(yesBtn);
+    yesBtn.classList.add('fullscreen');
+    yesBtn.textContent = "Иә";
+
+    heartBurst();
+  }
+
+  function exitFullscreenYesIfNeeded(){
+    const overlay = document.getElementById('fullscreenOverlay');
+    if(!overlay) return;
+
+    // remove overlay, restore yes into button row
+    overlay.remove();
+    yesBtn.classList.remove('fullscreen');
+    yesBtn.textContent = "Иә";
+    btnRow.prepend(yesBtn);
+
+    card.style.display = 'grid';
+  }
+
+  function showSuccess(){
+    exitFullscreenYesIfNeeded();
+    main.style.display = 'none';
+    success.style.display = 'block';
+    heartBurst();
+  }
+
+  // Button handlers
+  yesBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    startMusicIfPossible();
+    showSuccess();
+  });
+
+  function attachNoHandler(btn){
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      startMusicIfPossible();
+
       noCount++;
       noCountView.textContent = noCount;
 
-      // Change text
-      questionEl.textContent = prompts[Math.min(noCount-1, prompts.length-1)];
-      subtitleEl.textContent = "Жоқты басқан сайын Иә күшейеді 😄";
+      questionEl.textContent = questions[Math.min(noCount-1, questions.length-1)];
+      subtitleEl.textContent = "🙂";
 
-      // YES grows, NO shrinks
+      // scale changes
       yesScale = Math.min(yesScale + 0.22, 4);
-      noScale = Math.max(noScale - 0.13, 0.15);
+      noScale = Math.max(noScale - 0.13, 0.12);
 
       yesBtn.style.transform = `scale(${yesScale})`;
-      noBtn.style.transform = `scale(${noScale})`;
-      noBtn.style.opacity = Math.max(1 - noCount*0.12, 0.12);
+      btn.style.transform = `scale(${noScale})`;
+      btn.style.opacity = Math.max(1 - noCount*0.12, 0.12);
 
       spawnHeart();
 
-      // On 7th NO: NO disappears, YES becomes full-screen
       if(noCount >= 7){
-        // remove NO button from layout
-        noBtn.remove();
         enableFullscreenYes();
       }
     });
+  }
+  attachNoHandler(noBtn);
 
-    yesBtn.addEventListener("click", () => {
-      // If we're in fullscreen mode, remove overlay and restore layout later
-      const overlay = document.getElementById("fullscreenOverlay");
-      if(overlay){
-        overlay.remove();
-        yesBtn.classList.remove("fullscreen");
-      }
+  // First click anywhere starts music (optional but useful)
+  document.addEventListener('click', startMusicIfPossible, { once:false });
 
-      // Show final card
-      card.style.display = "block";
-      main.style.display = "none";
-      success.style.display = "block";
-      partyHearts();
-    });
+  // Restart
+  document.getElementById('restartBtn').addEventListener('click', (e) => {
+    e.stopPropagation();
 
-    restartBtn.addEventListener("click", () => {
-      // Reset
-      noCount = 0;
-      yesScale = 1;
-      noScale = 1;
-      noCountView.textContent = "0";
+    // restore UI
+    success.style.display = 'none';
+    main.style.display = 'block';
 
-      // Restore text
-      questionEl.textContent = "Менің валентинкам боласың ба? 💘";
-      subtitleEl.textContent = "Тек шындықты айт 😄";
+    // reset state
+    noCount = 0;
+    yesScale = 1;
+    noScale = 1;
+    noCountView.textContent = "0";
+    questionEl.textContent = "Менің қызым боласың ба? 💘";
+    subtitleEl.textContent = "Жауапты өзің таңда 😊";
+    yesBtn.style.transform = "scale(1)";
 
-      // Restore buttons row if NO was removed
-      if(!document.getElementById("noBtn")){
-        const newNo = document.createElement("button");
-        newNo.id = "noBtn";
-        newNo.textContent = "Жоқ ❌";
-        newNo.style.background = "rgba(0,0,0,0.06)";
-        newNo.style.color = "var(--no)";
-        newNo.style.transform = "scale(1)";
-        newNo.style.opacity = "1";
-        // attach same handler by cloning logic
-        newNo.addEventListener("click", () => {
-          noCount++;
-          noCountView.textContent = noCount;
+    // if fullscreen existed, exit it
+    exitFullscreenYesIfNeeded();
 
-          questionEl.textContent = prompts[Math.min(noCount-1, prompts.length-1)];
-          subtitleEl.textContent = "Жоқты басқан сайын Иә күшейеді 😄";
+    // recreate NO if missing
+    if(!document.getElementById('noBtn')){
+      const newNo = document.createElement('button');
+      newNo.id = 'noBtn';
+      newNo.textContent = 'Жоқ';
+      newNo.style.background = 'var(--noBg)';
+      newNo.style.color = '#222';
+      btnRow.appendChild(newNo);
+      noBtn = newNo;
+      attachNoHandler(noBtn);
+    } else {
+      noBtn = document.getElementById('noBtn');
+      noBtn.style.transform = 'scale(1)';
+      noBtn.style.opacity = '1';
+    }
+  });
 
-          yesScale = Math.min(yesScale + 0.22, 4);
-          noScale = Math.max(noScale - 0.13, 0.15);
+  // subtle ambient hearts on success
+  setInterval(() => {
+    if(success.style.display === 'block') spawnHeart();
+  }, 850);
+</script>
 
-          yesBtn.style.transform = `scale(${yesScale})`;
-          newNo.style.transform = `scale(${noScale})`;
-          newNo.style.opacity = Math.max(1 - noCount*0.12, 0.12);
-
-          spawnHeart();
-
-          if(noCount >= 7){
-            newNo.remove();
-            enableFullscreenYes();
-          }
-        });
-
-        btnRow.appendChild(newNo);
-      } else {
-        // If it exists, just reset its style
-        const existingNo = document.getElementById("noBtn");
-        existingNo.style.transform = "scale(1)";
-        existingNo.style.opacity = "1";
-      }
-
-      // Restore YES back to button row if it somehow stayed elsewhere
-      // Ensure YES is inside btnRow
-      if(yesBtn.parentElement !== btnRow){
-        btnRow.prepend(yesBtn);
-        yesBtn.classList.remove("fullscreen");
-        yesBtn.textContent = "Иә ✅";
-      }
-
-      yesBtn.style.transform = "scale(1)";
-
-      // Show main again
-      success.style.display = "none";
-      main.style.display = "block";
-      card.style.display = "block";
-    });
-
-    // Ambient hearts when success is shown
-    setInterval(() => {
-      if(success.style.display === "block") spawnHeart();
-    }, 900);
-  </script>
 </body>
 </html>

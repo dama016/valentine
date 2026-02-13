@@ -253,7 +253,7 @@
         </div>
 
         <div class="meta">
-          <div class="pill"></div>
+          <div class="pill"><b id="noCountView"></b></div>
           <button class="musicBtn" id="musicToggle"></button>
         </div>
       </div>
@@ -420,7 +420,7 @@
       startMusicIfPossible();
 
       noCount++;
-      noCountView.textContent = noCount;
+      noCountView.textContent = ;
 
       questionEl.textContent = questions[Math.min(noCount-1, questions.length-1)];
       subtitleEl.textContent = "🙂";

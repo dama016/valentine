@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Валентинка 💘</title>
+  <style>
+    :root{
+      --bg1:#ffdde8;
+      --bg2:#ffeef5;
+      --text:#2b2b2b;
+      --yes:#ff3b7a;
+      --no:#444;
+    }
+    *{box-sizing:border-box;}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background: radial-gradient(circle at top, var(--bg2), var(--bg1));
+      color:var(--text);
+      overflow:hidden;
+    }
+
+    .card{
+      width:min(560px, 92vw);
+      background: rgba(255,255,255,0.72);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.6);
+      border-radius: 26px;
+      padding: 26px;
+      box-shadow: 0 18px 60px rgba(0,0,0,0.12);
+      text-align:center;
+      position:relative;
+      z-index: 2;
+    }
+    h1{
+      margin: 0 0 10px;
+      font-size: clamp(22px, 3.4vw, 34px);
+    }
+    p{
+      margin: 0 0 18px;
+      opacity: .9;
+      line-height:1.4;
+    }
+
+    .btns{
+      display:flex;
+      gap:12px;
+      justify-content:center;
+      flex-wrap:wrap;
+      margin-top: 14px;
+    }
+    button{
+      border:none;
+      cursor:pointer;
+      border-radius: 999px;
+      padding: 12px 18px;
+      font-size: 16px;
+      font-weight: 800;
+      transition: transform .15s ease, box-shadow .15s ease, opacity .15s ease;
+      user-select:none;
+      transform-origin: center;
+    }
+    #yesBtn{
+      background: var(--yes);
+      color:white;
+      box-shadow: 0 10px 22px rgba(255,59,122,.28);
+      transform: scale(1);
+    }
+    #noBtn{
+      background: rgba(0,0,0,0.06);
+      color: var(--no);
+      transform: scale(1);
+    }
+
+    .badge{
+      display:inline-block;
+      padding:6px 10px;
+      border-radius:999px;
+      background: rgba(255,59,122,.12);
+      color: #ff2f71;
+      font-weight:800;
+      font-size: 12px;
+      margin-bottom: 10px;
+    }
+    .small{
+      font-size: 13px;
+      opacity:.75;
+      margin-top: 10px;
+    }
+
+    /* Fullscreen YES mode */
+    .fullscreen-yes{
+      position: fixed;
+      inset: 0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      z-index: 9999;
+      background: radial-gradient(circle at top, var(--bg2), var(--bg1));
+    }
+    #yesBtn.fullscreen{
+      width: 100vw;
+      height: 100vh;
+      border-radius: 0;
+      font-size: clamp(28px, 6vw, 64px);
+      box-shadow: none;
+      transform: none !important;
+    }
+
+    /* Final */
+    .success{
+      display:none;
+      animation: pop .35s ease;
+    }
+    @keyframes pop{
+      from{ transform: scale(.92); opacity:0; }
+      to{ transform: scale(1); opacity:1; }
+    }
+
+    /* Hearts */
+    .heart{
+      position:absolute;
+      font-size: 18px;
+      opacity:.9;
+      animation: floatUp linear forwards;
+      filter: drop-shadow(0 6px 10px rgba(0,0,0,.12));
+      pointer-events:none;
+      z-index: 1;
+    }
+    @keyframes floatUp{
+      from{ transform: translateY(30px) scale(.9); opacity:0; }
+      20%{ opacity:1; }
+      to{ transform: translateY(-120vh) scale(1.25); opacity:0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="card" id="card">
+    <div id="main">
+      <div class="badge">💌 Валентинка</div>
+      <h1 id="question">Менің валентинкам боласың ба? 💘</h1>
+      <p id="subtitle">Тек шындықты айт 😄</p>
+
+      <div class="btns" id="btnRow">
+        <button id="yesBtn">Иә ✅</button>
+        <button id="noBtn">Жоқ ❌</button>
+      </div>
+
+      <div class="small" id="counterHint">Жоқ: <b id="noCountView">0</b>/7</div>
+    </div>
+
+    <div class="success" id="success">
+      <div class="badge">🎉 Урааа!</div>
+      <h1>Еее! Енді сен менің валентинкамсың 💞</h1>
+      <p>Бүгін сенің көңіліңді көтеру — менің міндетім 😌</p>
+      <p><b>Кездесуге қашан шығамыз?</b> ☕🍫</p>
+
+      <div class="btns">
+        <button id="restartBtn" style="background: rgba(0,0,0,0.07); color:#222;">Қайтадан 😄</button>
+      </div>
+      <div class="small">P.S. “Жоқ” батырмасы демалысқа кетті 😇</div>
+    </div>
+  </div>
+
+  <script>
+    const questionEl = document.getElementById("question");
+    const subtitleEl = document.getElementById("subtitle");
+    const yesBtn = document.getElementById("yesBtn");
+    const noBtn = document.getElementById("noBtn");
+    const main = document.getElementById("main");
+    const success = document.getElementById("success");
+    const restartBtn = document.getElementById("restartBtn");
+    const card = document.getElementById("card");
+    const noCountView = document.getElementById("noCountView");
+    const btnRow = document.getElementById("btnRow");
+
+    let noCount = 0;
+    let yesScale = 1;
+    let noScale = 1;
+
+    const prompts = [
+      "Точно “жоқ” па? 😳",
+      "Дұрыстап ойландың ба? 🤨",
+      "Мүмкін жай тест қылып тұрсың? 😅",
+      "Жүрегіме тигізіп жатырсың ғой 💔",
+      "Соңғы рет ойланып көр… 😈",
+      "Жарайды, енді жеткілікті 😏",
+      "Ок, тағдыр бәрін шешті 😇"
+    ];
+
+    function spawnHeart(){
+      const heart = document.createElement("div");
+      heart.className = "heart";
+      const hearts = ["💖","💘","💗","💓","💞","💕","❤️"];
+      heart.textContent = hearts[Math.floor(Math.random()*hearts.length)];
+      heart.style.left = (Math.random()*100) + "vw";
+      heart.style.bottom = "-30px";
+      const dur = 3 + Math.random() * 2.5;
+      heart.style.animationDuration = dur + "s";
+      heart.style.fontSize = (16 + Math.random()*18) + "px";
+      document.body.appendChild(heart);
+      setTimeout(() => heart.remove(), (dur*1000) + 200);
+    }
+
+    function partyHearts(){
+      for(let i=0;i<22;i++) setTimeout(spawnHeart, i*60);
+      let t=0;
+      const it = setInterval(() => {
+        spawnHeart();
+        t++;
+        if(t>18) clearInterval(it);
+      }, 180);
+    }
+
+    function enableFullscreenYes(){
+      // Hide the whole card content, but keep it for restart logic
+      card.style.display = "none";
+
+      // Create overlay that contains YES button full-screen
+      const overlay = document.createElement("div");
+      overlay.className = "fullscreen-yes";
+      overlay.id = "fullscreenOverlay";
+
+      // Move yesBtn into overlay and make it full-screen
+      overlay.appendChild(yesBtn);
+      yesBtn.classList.add("fullscreen");
+      yesBtn.textContent = "ИӘ ✅ (бас!)";
+
+      document.body.appendChild(overlay);
+
+      subtitleEl.textContent = "😇";
+      partyHearts();
+    }
+
+    noBtn.addEventListener("click", () => {
+      noCount++;
+      noCountView.textContent = noCount;
+
+      // Change text
+      questionEl.textContent = prompts[Math.min(noCount-1, prompts.length-1)];
+      subtitleEl.textContent = "Жоқты басқан сайын Иә күшейеді 😄";
+
+      // YES grows, NO shrinks
+      yesScale = Math.min(yesScale + 0.22, 4);
+      noScale = Math.max(noScale - 0.13, 0.15);
+
+      yesBtn.style.transform = `scale(${yesScale})`;
+      noBtn.style.transform = `scale(${noScale})`;
+      noBtn.style.opacity = Math.max(1 - noCount*0.12, 0.12);
+
+      spawnHeart();
+
+      // On 7th NO: NO disappears, YES becomes full-screen
+      if(noCount >= 7){
+        // remove NO button from layout
+        noBtn.remove();
+        enableFullscreenYes();
+      }
+    });
+
+    yesBtn.addEventListener("click", () => {
+      // If we're in fullscreen mode, remove overlay and restore layout later
+      const overlay = document.getElementById("fullscreenOverlay");
+      if(overlay){
+        overlay.remove();
+        yesBtn.classList.remove("fullscreen");
+      }
+
+      // Show final card
+      card.style.display = "block";
+      main.style.display = "none";
+      success.style.display = "block";
+      partyHearts();
+    });
+
+    restartBtn.addEventListener("click", () => {
+      // Reset
+      noCount = 0;
+      yesScale = 1;
+      noScale = 1;
+      noCountView.textContent = "0";
+
+      // Restore text
+      questionEl.textContent = "Менің валентинкам боласың ба? 💘";
+      subtitleEl.textContent = "Тек шындықты айт 😄";
+
+      // Restore buttons row if NO was removed
+      if(!document.getElementById("noBtn")){
+        const newNo = document.createElement("button");
+        newNo.id = "noBtn";
+        newNo.textContent = "Жоқ ❌";
+        newNo.style.background = "rgba(0,0,0,0.06)";
+        newNo.style.color = "var(--no)";
+        newNo.style.transform = "scale(1)";
+        newNo.style.opacity = "1";
+        // attach same handler by cloning logic
+        newNo.addEventListener("click", () => {
+          noCount++;
+          noCountView.textContent = noCount;
+
+          questionEl.textContent = prompts[Math.min(noCount-1, prompts.length-1)];
+          subtitleEl.textContent = "Жоқты басқан сайын Иә күшейеді 😄";
+
+          yesScale = Math.min(yesScale + 0.22, 4);
+          noScale = Math.max(noScale - 0.13, 0.15);
+
+          yesBtn.style.transform = `scale(${yesScale})`;
+          newNo.style.transform = `scale(${noScale})`;
+          newNo.style.opacity = Math.max(1 - noCount*0.12, 0.12);
+
+          spawnHeart();
+
+          if(noCount >= 7){
+            newNo.remove();
+            enableFullscreenYes();
+          }
+        });
+
+        btnRow.appendChild(newNo);
+      } else {
+        // If it exists, just reset its style
+        const existingNo = document.getElementById("noBtn");
+        existingNo.style.transform = "scale(1)";
+        existingNo.style.opacity = "1";
+      }
+
+      // Restore YES back to button row if it somehow stayed elsewhere
+      // Ensure YES is inside btnRow
+      if(yesBtn.parentElement !== btnRow){
+        btnRow.prepend(yesBtn);
+        yesBtn.classList.remove("fullscreen");
+        yesBtn.textContent = "Иә ✅";
+      }
+
+      yesBtn.style.transform = "scale(1)";
+
+      // Show main again
+      success.style.display = "none";
+      main.style.display = "block";
+      card.style.display = "block";
+    });
+
+    // Ambient hearts when success is shown
+    setInterval(() => {
+      if(success.style.display === "block") spawnHeart();
+    }, 900);
+  </script>
+</body>
+</html>
